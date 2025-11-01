@@ -54,6 +54,7 @@ router.post('/paths', async (req, res) => {
       orderedLocations = locations.map((loc, index) => ({
         lat: loc.lat,
         lng: loc.lng,
+        current_date: loc.current_date,
         order: loc.order !== undefined ? loc.order : index
       }));
     }
@@ -113,7 +114,7 @@ router.delete('/paths/:id', async (req, res) => {
 // POST add new location to path
 router.post('/paths/:id/locations', async (req, res) => {
   try {
-    const { lat, lng } = req.body;
+    const { lat, lng, current_date} = req.body;
     
     if (lat === undefined || lng === undefined) {
       return res.status(400).json({ success: false, message: 'Latitude and longitude are required' });
@@ -130,6 +131,7 @@ router.post('/paths/:id/locations', async (req, res) => {
     path.locations.push({
       lat,
       lng,
+      current_date,
       order: newOrder
     });
 
