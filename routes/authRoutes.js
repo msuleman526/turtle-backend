@@ -4,6 +4,56 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 
+
+// GET: Register the admin user (one-time setup)
+router.get('/register-admin', async (req, res) => {
+  try {
+    const email = 'admin@turtle.com';
+    const password = 'TurtlePath@2024!Admin$ecure';
+
+    // Check if already exists
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.json({
+        success: true,
+        message: 'Admin already exists',
+        user: { id: user._id, email: user.email }
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
+    user = await User.create({
+      email,
+      password: hashedPassword
+    });
+
+    // Create token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      success: true,
+      message: 'Admin user created successfully',
+      token,
+      user: { id: user._id, email: user.email }
+    });
+  } catch (error) {
+    console.error('Register-admin error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during admin registration'
+    });
+  }
+});
+
+
+
 // POST login
 router.post('/login', async (req, res) => {
   try {
