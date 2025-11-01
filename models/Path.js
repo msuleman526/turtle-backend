@@ -9,6 +9,10 @@ const locationSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  current_date: {
+    type: String,
+    required: true
+  },
   order: {
     type: Number,
     required: true
